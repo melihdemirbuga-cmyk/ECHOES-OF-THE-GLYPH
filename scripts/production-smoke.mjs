@@ -1,0 +1,12 @@
+import {chromium,expect} from '@playwright/test';
+const browser=await chromium.launch({channel:'msedge',headless:true,args:['--enable-webgl','--ignore-gpu-blocklist']});
+const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[],requests=[];
+page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+await page.route('**/*',route=>{const url=new URL(route.request().url());requests.push(url.host);return url.hostname==='127.0.0.1'?route.continue():route.abort();});
+await page.goto('http://127.0.0.1:4173/');await expect(page.locator('.home h1')).toBeVisible();await page.waitForTimeout(1600);await page.screenshot({path:'artifacts/01-hauptmenue.png'});
+await page.getByRole('button',{name:/Neue Geschichte/}).click();await page.waitForTimeout(1500);await page.keyboard.press('Escape');await expect(page.getByRole('heading',{name:'Die Welt wartet.'})).toBeVisible();await page.getByRole('button',{name:'Einstellungen',exact:true}).click();
+await expect(page.locator('#setting-mode')).toBeFocused();await page.keyboard.press('Tab');await expect(page.locator('#setting-quality')).toBeFocused();await page.keyboard.press('Escape');await expect(page.locator('#overlay')).toBeHidden();
+await page.keyboard.press('KeyI');await expect(page.getByRole('heading',{name:'Nemas Vermächtnis'})).toBeVisible();await page.keyboard.press('KeyI');
+await page.waitForTimeout(5000);await page.screenshot({path:'artifacts/02-kapelle.png'});await page.keyboard.press('KeyC');await page.waitForTimeout(1600);await page.screenshot({path:'artifacts/06-nema-nahansicht.png'});
+expect(await page.evaluate(()=>typeof window.__game)).toBe('undefined');await page.reload();await expect(page.getByRole('button',{name:/Reise fortsetzen/})).toBeVisible();expect(errors).toEqual([]);
+console.log(JSON.stringify({production:'passed',errors,onlyLocalRequests:[...new Set(requests)],debugHooks:'absent',saveRestore:'passed',keyboardFocus:'passed'},null,2));await browser.close();
