@@ -2,13 +2,17 @@
 
 Ein lokal spielbares, deutschsprachiges 3D-Action-RPG in einer Welt aus Licht und Schrift. Nema, die letzte Glyphenhüterin, sucht drei Erinnerungssiegel und die Wahrheit hinter Avars Großer Auslöschung.
 
+## GitHub Pages
+
+Das bestehende Projekt ist für den Produktionspfad `/ECHOES-OF-THE-GLYPH/` vorbereitet. Nach deinem Upload baut und veröffentlicht `.github/workflows/deploy.yml` das Spiel bei Pushes auf `main`. Die vollständigen Schritte für GitHub Desktop, Pages-Aktivierung und spätere Updates stehen in [GITHUB-PAGES-ANLEITUNG.md](GITHUB-PAGES-ANLEITUNG.md). Es wurde hier nichts auf GitHub hochgeladen.
+
 ## Sofort spielen unter Windows
 
 1. **`SPIEL STARTEN.cmd` doppelklicken.** Der fertige Produktionsbuild ist in `dist/` enthalten. Der Starter öffnet den Browser auf **http://127.0.0.1:4173**.
 2. **Neue Geschichte** wählen. Per Rechtsklick laufen und vor der Kapelle Edda ansprechen (F).
 3. Nach dem Spielen kann `SPIEL BEENDEN.cmd` den lokalen Hintergrundserver schließen.
 
-Voraussetzungen: Node.js 22.12 oder neuer sowie ein aktueller Browser mit WebGL2 und eingeschalteter Hardwarebeschleunigung. Auf dem Entwicklungsrechner wurden Node 22.13.1 und Microsoft Edge verwendet. Zum Spielen sind keine npm-Installation, Netzwerkverbindung, Konten, API-Schlüssel oder kostenpflichtigen Dienste nötig. Das Spiel läuft ausschließlich auf der Loopback-Adresse des eigenen Rechners.
+Voraussetzungen für den lokalen Windows-Start: Node.js 22.12 oder neuer sowie ein aktueller Browser mit WebGL2 und eingeschalteter Hardwarebeschleunigung. Auf dem Entwicklungsrechner wurden Node 22.13.1 und Microsoft Edge verwendet. Mit vorhandenem `dist` sind zum lokalen Spielen keine npm-Installation, Netzwerkverbindung, Konten, API-Schlüssel oder kostenpflichtigen Dienste nötig. Dieser Startmodus läuft auf der Loopback-Adresse des eigenen Rechners. Auf GitHub Pages benötigen Besucher nur den Browser; Node.js wird dort ausschließlich beim automatischen Build verwendet.
 
 Der Spielstand gehört zum Browser und zur Adresse. Entwicklungsserver (Port 5173) und fertige Version (Port 4173) haben getrennte Browser-Speicher. Über **Pause → Spielstand exportieren/importieren** kann der Fortschritt übertragen werden. Der Import ersetzt den aktuellen Spielstand.
 
@@ -85,16 +89,17 @@ Der Renderer besteht aus drei GPU-Durchläufen:
 ## Entwicklung und Tests
 
 ```powershell
-npm ci --legacy-peer-deps
+npm ci
 npm run dev
 npm test
 npm run test:browser
 npm run build
+npm run test:pages
 ```
 
-Der Entwicklungsserver läuft auf http://127.0.0.1:5173. Browser-Tests setzen diesen laufenden Server und Microsoft Edge voraus. `npm run preview` zeigt den Build ebenfalls auf Port 5173. Der Doppelklick-Starter verwendet den unabhängigen Standardbibliothek-Server auf Port 4173.
+Der Entwicklungsserver läuft auf http://127.0.0.1:5173. Browser-Tests setzen diesen laufenden Server und Microsoft Edge voraus. `npm run preview` zeigt den Pages-Build auf http://127.0.0.1:5173/ECHOES-OF-THE-GLYPH/. `npm run test:pages` startet und beendet seine Preview auf Port 5175 selbst. Der Doppelklick-Starter verwendet den unabhängigen Standardbibliothek-Server auf Port 4173 und unterstützt weiterhin die bisherige Startadresse.
 
-`--legacy-peer-deps` umgeht einen Fehler der hier vorhandenen npm-10-Peer-Auflösung bei optionalen Vitest-Erweiterungen. Alle tatsächlich verwendeten Versionen stehen exakt in `package.json` und `package-lock.json`.
+Die eingecheckte `.npmrc` aktiviert `legacy-peer-deps=true` und umgeht damit einen Fehler der hier vorhandenen npm-10-Peer-Auflösung bei optionalen Vitest-Erweiterungen. Alle tatsächlich verwendeten Versionen stehen exakt in `package.json` und `package-lock.json`.
 
 Die Logiktests prüfen Schaden, Ausrüstung, Heilung, Level, Gold, Schmiede, Loot, Persistenz, Rätsel, Questbedingungen, beide Glockenentscheidungen und alle Endbedingungen. Die fünf Karten werden zusätzlich mit einer Wegsuche auf erreichbare Interaktionsziele geprüft.
 

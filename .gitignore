@@ -5,3 +5,31 @@ playwright-report/
 *.log
 .reference/
 .runtime/
+
+# Generated reports, caches and temporary files
+artifacts/
+coverage/
+.cache/
+.vite/
+tmp/
+temp/
+*.tsbuildinfo
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+
+# Local configuration and credentials (the checked-in .npmrc contains no secrets)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+credentials*.json
+
+# Reference media and previous local release archives are not game assets
+/ECHOES-OF-THE-GLYPH-*.zip
+/SnapInsta.to_*.mp4
+/spiel_video_referenzbilder.jpg

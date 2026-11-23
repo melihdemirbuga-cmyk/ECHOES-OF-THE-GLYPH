@@ -1,2 +1,5 @@
 import {defineConfig} from 'vite';
-export default defineConfig({build:{rollupOptions:{output:{manualChunks:{three:['three']}}}}});
+export default defineConfig({
+  base:'/ECHOES-OF-THE-GLYPH/',
+  build:{rollupOptions:{output:{manualChunks:{three:['three']}}}}
+});

@@ -5,12 +5,17 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','dist');
 const port=Number(process.env.ECHOES_PORT)||4173;
+const base='/ECHOES-OF-THE-GLYPH/';
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json'};
 const server=http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,'http://127.0.0.1');
     if(url.pathname==='/health'){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({game:'echoes-of-the-glyph',version:'1.2.0'}));return;}
-    const pathname=decodeURIComponent(url.pathname);const target=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));const relative=path.relative(root,target);
+    // Keep the original local URL and its browser saves, while serving the Pages build.
+    if(url.pathname===base.slice(0,-1)){res.writeHead(302,{Location:base+url.search});res.end();return;}
+    let pathname=decodeURIComponent(url.pathname);
+    if(pathname.startsWith(base))pathname='/'+pathname.slice(base.length);
+    const target=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));const relative=path.relative(root,target);
     if(relative.startsWith('..')||path.isAbsolute(relative)){res.writeHead(403);res.end('Forbidden');return;}
     if(!(await stat(target)).isFile())throw Error('not a file');
     res.writeHead(200,{'Content-Type':types[path.extname(target)]||'application/octet-stream','Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'});res.end(await readFile(target));
